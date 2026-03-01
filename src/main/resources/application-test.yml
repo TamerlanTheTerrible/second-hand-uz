@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    show-sql: true
+  liquibase:
+    enabled: true
+
+app:
+  jwt:
+    secret: TestSecretKeyThatIsLongEnoughForHmacSha256AlgorithmTesting
+    expiration-ms: 3600000
+  upload:
+    path: /tmp/test-uploads
+
+logging:
+  level:
+    me.timur.secondhanduz: DEBUG

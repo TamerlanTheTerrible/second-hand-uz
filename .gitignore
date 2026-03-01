@@ -1,0 +1,46 @@
+# Maven
+target/
+.mvn/wrapper/apache-maven-*/
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+### Claude Code ###
+.claude/logs/
+.claude/memory/
+.claude/settings.local.json
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### VS Code ###
+.vscode/
+
+### Environment ###
+.env
+.env.*
+!.env.example
+
+### Uploads (runtime generated) ###
+uploads/
+
+### Logs ###
+logs/
+*.log
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### Node / Frontend ###
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+frontend/.env.local
