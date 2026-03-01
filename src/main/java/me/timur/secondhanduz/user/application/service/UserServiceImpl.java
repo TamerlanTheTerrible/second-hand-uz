@@ -3,7 +3,7 @@ package me.timur.secondhanduz.user.application.service;
 import me.timur.secondhanduz.common.exception.ApiException;
 import me.timur.secondhanduz.common.exception.ErrorCode;
 import me.timur.secondhanduz.common.logging.AuditLogger;
-import me.timur.secondhanduz.common.logging.AuditLogger;
+import org.springframework.context.annotation.Lazy;
 import me.timur.secondhanduz.common.security.TokenProvider;
 import me.timur.secondhanduz.common.security.UserPrincipal;
 import me.timur.secondhanduz.user.application.port.in.UserService;
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
                            PasswordEncoder passwordEncoder,
                            TokenProvider jwtTokenProvider,
                            AuditLogger auditLogService,
-                           ReviewAverageProvider reviewAverageProvider) {
+                           @Lazy ReviewAverageProvider reviewAverageProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
