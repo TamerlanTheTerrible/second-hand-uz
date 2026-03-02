@@ -23,11 +23,11 @@ public interface JpaListingRepository extends JpaRepository<Listing, Long>, List
     @Query("""
             SELECT l FROM Listing l
             WHERE l.status = :status
-            AND (:query    IS NULL OR lower(l.title) LIKE :query OR lower(l.brand) LIKE :query)
-            AND (:brand    IS NULL OR lower(l.brand) LIKE :brand)
+            AND (cast(:query as String)    IS NULL OR lower(l.title) LIKE cast(:query as String) OR lower(l.brand) LIKE cast(:query as String))
+            AND (cast(:brand as String)    IS NULL OR lower(l.brand) LIKE cast(:brand as String))
             AND (:minPrice IS NULL OR l.price >= :minPrice)
             AND (:maxPrice IS NULL OR l.price <= :maxPrice)
-            AND (:size     IS NULL OR l.size = :size)
+            AND (cast(:size as String)     IS NULL OR l.size = cast(:size as String))
             AND (:category IS NULL OR l.category = :category)
             ORDER BY l.createdAt DESC
             """)

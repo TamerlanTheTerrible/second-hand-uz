@@ -3,7 +3,7 @@ const translations = {
     nav: {
       browse: "Ko'rish",
       sell: "Sotish",
-      orders: "Buyurtmalar",
+      orders: "🛒 Savat",
       login: "Kirish",
       register: "Ro'yxatdan o'tish",
       logout: "Chiqish",
@@ -150,7 +150,7 @@ const translations = {
     nav: {
       browse: "Просмотр",
       sell: "Продать",
-      orders: "Заказы",
+      orders: "🛒 Корзина",
       login: "Войти",
       register: "Регистрация",
       logout: "Выйти",
@@ -297,7 +297,7 @@ const translations = {
     nav: {
       browse: "Browse",
       sell: "Sell",
-      orders: "Orders",
+      orders: "🛒 Cart",
       login: "Log In",
       register: "Register",
       logout: "Log Out",
