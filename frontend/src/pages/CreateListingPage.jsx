@@ -2,19 +2,26 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { listingsApi } from '../api/listings'
+import { useLocale } from '../context/LocaleContext'
+import { getErrorMessage } from '../utils/errorMessage'
 
-const CONDITIONS = ['NEW', 'LIKE_NEW', 'GOOD', 'FAIR', 'POOR']
+const CONDITIONS  = ['NEW', 'LIKE_NEW', 'GOOD', 'FAIR', 'POOR']
+const CATEGORIES  = [
+  'CLOTHING', 'SHOES', 'KIDS_CLOTHING', 'KIDS_SHOES',
+  'ACCESSORIES', 'BAGS', 'SPORTSWEAR', 'OUTERWEAR', 'OTHER',
+]
 
 export default function CreateListingPage() {
+  const { t } = useLocale()
   const navigate    = useNavigate()
   const queryClient = useQueryClient()
 
   const [form, setForm] = useState({
     title: '', description: '', price: '', condition: 'GOOD',
-    brand: '', size: '',
+    category: 'CLOTHING', brand: '', size: '', gender: '',
   })
-  const [images, setImages]   = useState([])
-  const [error,  setError]    = useState('')
+  const [images, setImages] = useState([])
+  const [error,  setError]  = useState('')
 
   function update(field, value) {
     setForm(f => ({ ...f, [field]: value }))
@@ -25,10 +32,11 @@ export default function CreateListingPage() {
       const listing = await listingsApi.create({
         ...form,
         price: Number(form.price),
+        gender: form.gender || null,
       })
       for (const file of images) {
         const fd = new FormData()
-        fd.append('image', file)
+        fd.append('file', file)
         await listingsApi.uploadImage(listing.id, fd)
       }
       return listing
@@ -39,10 +47,10 @@ export default function CreateListingPage() {
     },
     onError: (err) => {
       const fieldErrors = err.response?.data?.fieldErrors
-      if (fieldErrors) {
-        setError(Object.values(fieldErrors).join(', '))
+      if (fieldErrors?.length) {
+        setError(fieldErrors.map(fe => `${fe.field}: ${fe.message}`).join(', '))
       } else {
-        setError(err.response?.data?.message ?? 'Failed to create listing')
+        setError(getErrorMessage(err, t.errors))
       }
     },
   })
@@ -56,17 +64,17 @@ export default function CreateListingPage() {
   return (
     <div className="page">
       <div className="container" style={{ maxWidth: '640px' }}>
-        <h1 style={styles.heading}>Create Listing</h1>
+        <h1 style={styles.heading}>{t.createListing.title}</h1>
         <div className="card" style={{ padding: '2rem' }}>
           {error && <p className="error-message" style={{ marginBottom: '1rem' }}>{error}</p>}
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Title *</label>
+              <label>{t.createListing.titleField}</label>
               <input required value={form.title} onChange={e => update('title', e.target.value)} maxLength={200} />
             </div>
             <div className="form-group">
-              <label>Description *</label>
+              <label>{t.createListing.description}</label>
               <textarea
                 required
                 rows={5}
@@ -77,7 +85,7 @@ export default function CreateListingPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
-                <label>Price (UZS) *</label>
+                <label>{t.createListing.price}</label>
                 <input
                   type="number" required min="0" step="100"
                   value={form.price}
@@ -85,26 +93,45 @@ export default function CreateListingPage() {
                 />
               </div>
               <div className="form-group">
-                <label>Condition *</label>
-                <select value={form.condition} onChange={e => update('condition', e.target.value)}>
-                  {CONDITIONS.map(c => (
-                    <option key={c} value={c}>{c.replace('_', ' ')}</option>
+                <label>{t.createListing.category}</label>
+                <select value={form.category} onChange={e => update('category', e.target.value)}>
+                  {CATEGORIES.map(c => (
+                    <option key={c} value={c}>{t.categoryLabels[c] ?? c.replace(/_/g, ' ')}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
-                <label>Brand</label>
+                <label>{t.createListing.condition}</label>
+                <select value={form.condition} onChange={e => update('condition', e.target.value)}>
+                  {CONDITIONS.map(c => (
+                    <option key={c} value={c}>{t.conditionLabels[c] ?? c.replace(/_/g, ' ')}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>{t.createListing.gender}</label>
+                <select value={form.gender} onChange={e => update('gender', e.target.value)}>
+                  <option value="">{t.createListing.genderAny}</option>
+                  <option value="MALE">{t.createListing.genderMale}</option>
+                  <option value="FEMALE">{t.createListing.genderFemale}</option>
+                  <option value="UNISEX">{t.createListing.genderUnisex}</option>
+                </select>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-group">
+                <label>{t.createListing.brand}</label>
                 <input value={form.brand} onChange={e => update('brand', e.target.value)} maxLength={100} />
               </div>
               <div className="form-group">
-                <label>Size</label>
+                <label>{t.createListing.size}</label>
                 <input value={form.size} onChange={e => update('size', e.target.value)} maxLength={50} />
               </div>
             </div>
             <div className="form-group">
-              <label>Images (optional, up to 10)</label>
+              <label>{t.createListing.images}</label>
               <input
                 type="file"
                 accept="image/*"
@@ -113,7 +140,7 @@ export default function CreateListingPage() {
               />
               {images.length > 0 && (
                 <span style={{ fontSize: '0.85rem', color: '#616161' }}>
-                  {images.length} file(s) selected
+                  {images.length} {t.createListing.filesSelected}
                 </span>
               )}
             </div>
@@ -123,7 +150,7 @@ export default function CreateListingPage() {
               style={{ width: '100%', marginTop: '0.5rem' }}
               disabled={createMutation.isPending}
             >
-              {createMutation.isPending ? 'Creating...' : 'Create Listing'}
+              {createMutation.isPending ? t.createListing.submitting : t.createListing.submit}
             </button>
           </form>
         </div>

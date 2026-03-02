@@ -4,6 +4,8 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import me.timur.secondhanduz.listing.domain.Gender;
+import me.timur.secondhanduz.listing.domain.ListingCategory;
 import me.timur.secondhanduz.listing.domain.ListingCondition;
 
 import java.math.BigDecimal;
@@ -28,5 +30,10 @@ public record CreateListingRequest(
         String brand,
 
         @NotNull(message = "Condition is required")
-        ListingCondition condition
+        ListingCondition condition,
+
+        Gender gender,
+
+        @NotNull(message = "Category is required")
+        ListingCategory category
 ) {}

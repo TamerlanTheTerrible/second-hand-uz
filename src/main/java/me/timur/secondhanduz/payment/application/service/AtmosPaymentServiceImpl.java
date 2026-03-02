@@ -14,6 +14,7 @@ import me.timur.secondhanduz.payment.web.dto.PaymentSessionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +34,7 @@ import java.util.Map;
  * Reference: https://docs.atmos.uz/
  */
 @Service
+@Profile("prod")
 public class AtmosPaymentServiceImpl implements PaymentService {
 
     private static final Logger log = LoggerFactory.getLogger(AtmosPaymentServiceImpl.class);

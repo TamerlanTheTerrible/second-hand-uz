@@ -4,6 +4,7 @@ import me.timur.secondhanduz.common.exception.ApiException;
 import me.timur.secondhanduz.common.logging.AuditLogger;
 import me.timur.secondhanduz.listing.application.port.out.ListingRepository;
 import me.timur.secondhanduz.listing.domain.Listing;
+import me.timur.secondhanduz.listing.domain.ListingCategory;
 import me.timur.secondhanduz.listing.domain.ListingCondition;
 import me.timur.secondhanduz.order.application.port.out.OrderRepository;
 import me.timur.secondhanduz.order.application.service.OrderServiceImpl;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,14 +44,14 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         activeListing = new Listing(2L, "Shoes", "desc", BigDecimal.valueOf(100),
-                "42", "Nike", ListingCondition.GOOD);
+                "42", "Nike", ListingCondition.GOOD, null, ListingCategory.SHOES);
         createdOrder = new Order(1L, 1L, BigDecimal.valueOf(100));
     }
 
     @Test
     void should_createOrder_when_listingIsAvailable() {
         when(listingRepository.findById(1L)).thenReturn(Optional.of(activeListing));
-        when(orderRepository.existsByListingId(1L)).thenReturn(false);
+        when(orderRepository.existsByListingIdAndStatusNot(eq(1L), any())).thenReturn(false);
         when(orderRepository.save(any())).thenReturn(createdOrder);
 
         OrderResponse response = orderService.createOrder(new CreateOrderRequest(1L), 1L);
@@ -61,7 +63,7 @@ class OrderServiceTest {
     @Test
     void should_throwConflict_when_listingAlreadyOrdered() {
         when(listingRepository.findById(1L)).thenReturn(Optional.of(activeListing));
-        when(orderRepository.existsByListingId(1L)).thenReturn(true);
+        when(orderRepository.existsByListingIdAndStatusNot(eq(1L), any())).thenReturn(true);
 
         assertThatThrownBy(() -> orderService.createOrder(new CreateOrderRequest(1L), 1L))
                 .isInstanceOf(ApiException.class)

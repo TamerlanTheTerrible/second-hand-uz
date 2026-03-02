@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import me.timur.secondhanduz.common.security.SecurityUtils;
 import me.timur.secondhanduz.listing.application.port.in.ListingService;
+import me.timur.secondhanduz.listing.domain.ListingCategory;
 import me.timur.secondhanduz.listing.web.dto.CreateListingRequest;
 import me.timur.secondhanduz.listing.web.dto.ListingResponse;
 import me.timur.secondhanduz.listing.web.dto.ListingSearchParams;
@@ -52,8 +53,9 @@ public class ListingController {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String size,
+            @RequestParam(required = false) ListingCategory category,
             @PageableDefault(size = 20, sort = "createdAt") @ParameterObject Pageable pageable) {
-        var params = new ListingSearchParams(query, brand, minPrice, maxPrice, size);
+        var params = new ListingSearchParams(query, brand, minPrice, maxPrice, size, category);
         return ResponseEntity.ok(listingService.getListings(params, pageable));
     }
 

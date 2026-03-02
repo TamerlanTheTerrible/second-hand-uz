@@ -1,5 +1,7 @@
 package me.timur.secondhanduz.listing.web.dto;
 
+import me.timur.secondhanduz.listing.domain.Gender;
+import me.timur.secondhanduz.listing.domain.ListingCategory;
 import me.timur.secondhanduz.listing.domain.ListingCondition;
 import me.timur.secondhanduz.listing.domain.ListingStatus;
 
@@ -18,6 +20,8 @@ public record ListingResponse(
         String brand,
         ListingCondition condition,
         ListingStatus status,
+        Gender gender,
+        ListingCategory category,
         List<String> imageUrls,
         LocalDateTime createdAt
 ) {}

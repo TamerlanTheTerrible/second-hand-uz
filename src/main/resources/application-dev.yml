@@ -2,7 +2,7 @@ spring:
   jpa:
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/secondhanduz_dev
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/secondhanduz_dev}
 
 logging:
   level:

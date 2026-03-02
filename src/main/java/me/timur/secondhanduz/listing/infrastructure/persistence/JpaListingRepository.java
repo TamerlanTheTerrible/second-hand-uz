@@ -2,6 +2,7 @@ package me.timur.secondhanduz.listing.infrastructure.persistence;
 
 import me.timur.secondhanduz.listing.application.port.out.ListingRepository;
 import me.timur.secondhanduz.listing.domain.Listing;
+import me.timur.secondhanduz.listing.domain.ListingCategory;
 import me.timur.secondhanduz.listing.domain.ListingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +23,12 @@ public interface JpaListingRepository extends JpaRepository<Listing, Long>, List
     @Query("""
             SELECT l FROM Listing l
             WHERE l.status = :status
-            AND (:query   IS NULL OR lower(l.title) LIKE lower(concat('%', :query, '%'))
-                                  OR lower(l.brand) LIKE lower(concat('%', :query, '%')))
-            AND (:brand    IS NULL OR lower(l.brand) LIKE lower(concat('%', :brand, '%')))
+            AND (:query    IS NULL OR lower(l.title) LIKE :query OR lower(l.brand) LIKE :query)
+            AND (:brand    IS NULL OR lower(l.brand) LIKE :brand)
             AND (:minPrice IS NULL OR l.price >= :minPrice)
             AND (:maxPrice IS NULL OR l.price <= :maxPrice)
             AND (:size     IS NULL OR l.size = :size)
+            AND (:category IS NULL OR l.category = :category)
             ORDER BY l.createdAt DESC
             """)
     Page<Listing> searchListings(
@@ -36,6 +37,7 @@ public interface JpaListingRepository extends JpaRepository<Listing, Long>, List
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice,
             @Param("size")     String size,
+            @Param("category") ListingCategory category,
             @Param("status")   ListingStatus status,
             Pageable pageable
     );

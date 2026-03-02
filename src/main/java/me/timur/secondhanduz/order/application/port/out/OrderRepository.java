@@ -1,6 +1,7 @@
 package me.timur.secondhanduz.order.application.port.out;
 
 import me.timur.secondhanduz.order.domain.Order;
+import me.timur.secondhanduz.order.domain.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,5 +18,6 @@ public interface OrderRepository {
 
     Page<Order> findByBuyerId(Long buyerId, Pageable pageable);
 
-    boolean existsByListingId(Long listingId);
+    /** Returns true if a non-canceled (active) order exists for the given listing. */
+    boolean existsByListingIdAndStatusNot(Long listingId, OrderStatus status);
 }

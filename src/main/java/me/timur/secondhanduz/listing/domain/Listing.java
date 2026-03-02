@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,10 +47,18 @@ public class Listing {
     private ListingCondition condition;
 
     @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ListingCategory category;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ListingStatus status;
 
     // Stored as PostgreSQL TEXT[] array
+    @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "image_urls", columnDefinition = "TEXT[]")
     private String[] imageUrls;
 
@@ -58,7 +68,8 @@ public class Listing {
     protected Listing() {}
 
     public Listing(Long sellerId, String title, String description, BigDecimal price,
-                   String size, String brand, ListingCondition condition) {
+                   String size, String brand, ListingCondition condition, Gender gender,
+                   ListingCategory category) {
         this.sellerId = sellerId;
         this.title = title;
         this.description = description;
@@ -66,6 +77,8 @@ public class Listing {
         this.size = size;
         this.brand = brand;
         this.condition = condition;
+        this.gender = gender;
+        this.category = category;
         this.status = ListingStatus.ACTIVE;
         this.imageUrls = new String[0];
         this.createdAt = LocalDateTime.now();
@@ -79,6 +92,8 @@ public class Listing {
     public String getSize() { return size; }
     public String getBrand() { return brand; }
     public ListingCondition getCondition() { return condition; }
+    public Gender getGender() { return gender; }
+    public ListingCategory getCategory() { return category; }
     public ListingStatus getStatus() { return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
@@ -95,13 +110,16 @@ public class Listing {
     }
 
     public void update(String title, String description, BigDecimal price,
-                       String size, String brand, ListingCondition condition) {
+                       String size, String brand, ListingCondition condition, Gender gender,
+                       ListingCategory category) {
         this.title = title;
         this.description = description;
         this.price = price;
         this.size = size;
         this.brand = brand;
         this.condition = condition;
+        this.gender = gender;
+        this.category = category;
     }
 
     public void markSold() {

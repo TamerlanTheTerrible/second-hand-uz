@@ -9,6 +9,7 @@ import ListingDetailPage from './pages/ListingDetailPage'
 import CreateListingPage from './pages/CreateListingPage'
 import OrdersPage from './pages/OrdersPage'
 import SellerProfilePage from './pages/SellerProfilePage'
+import MockPaymentPage from './pages/MockPaymentPage'
 
 export default function App() {
   return (
@@ -25,6 +26,9 @@ export default function App() {
         } />
         <Route path="/orders"             element={
           <ProtectedRoute><OrdersPage /></ProtectedRoute>
+        } />
+        <Route path="/mock-payment/:orderId" element={
+          <ProtectedRoute><MockPaymentPage /></ProtectedRoute>
         } />
       </Routes>
     </AuthProvider>

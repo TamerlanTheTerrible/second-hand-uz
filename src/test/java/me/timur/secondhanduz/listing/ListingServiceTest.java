@@ -6,6 +6,7 @@ import me.timur.secondhanduz.common.util.InputSanitizer;
 import me.timur.secondhanduz.listing.application.port.out.ListingRepository;
 import me.timur.secondhanduz.listing.application.service.ListingServiceImpl;
 import me.timur.secondhanduz.listing.domain.Listing;
+import me.timur.secondhanduz.listing.domain.ListingCategory;
 import me.timur.secondhanduz.listing.domain.ListingCondition;
 import me.timur.secondhanduz.listing.domain.ListingStatus;
 import me.timur.secondhanduz.listing.web.dto.CreateListingRequest;
@@ -45,7 +46,7 @@ class ListingServiceTest {
     void setUp() {
         ReflectionTestUtils.setField(listingService, "uploadPath", "/tmp/uploads");
         activeListing = new Listing(1L, "Nike Shoes", "Good pair", BigDecimal.valueOf(50),
-                "42", "Nike", ListingCondition.GOOD);
+                "42", "Nike", ListingCondition.GOOD, null, ListingCategory.SHOES);
     }
 
     @Test
@@ -55,7 +56,7 @@ class ListingServiceTest {
 
         ListingResponse response = listingService.createListing(
                 new CreateListingRequest("Nike Shoes", "Good pair",
-                        BigDecimal.valueOf(50), "42", "Nike", ListingCondition.GOOD), 1L);
+                        BigDecimal.valueOf(50), "42", "Nike", ListingCondition.GOOD, null, ListingCategory.SHOES), 1L);
 
         assertThat(response.title()).isEqualTo("Nike Shoes");
         assertThat(response.price()).isEqualByComparingTo(BigDecimal.valueOf(50));
@@ -67,7 +68,7 @@ class ListingServiceTest {
         when(listingRepository.findById(1L)).thenReturn(Optional.of(activeListing));
 
         assertThatThrownBy(() -> listingService.updateListing(1L,
-                new UpdateListingRequest("New", "Desc", BigDecimal.ONE, "M", "Brand", ListingCondition.NEW),
+                new UpdateListingRequest("New", "Desc", BigDecimal.ONE, "M", "Brand", ListingCondition.NEW, null, ListingCategory.CLOTHING),
                 99L))
                 .isInstanceOf(ApiException.class)
                 .hasMessageContaining("do not own");
@@ -79,7 +80,7 @@ class ListingServiceTest {
         when(listingRepository.findById(1L)).thenReturn(Optional.of(activeListing));
 
         assertThatThrownBy(() -> listingService.updateListing(1L,
-                new UpdateListingRequest("T", "D", BigDecimal.ONE, "S", "B", ListingCondition.FAIR),
+                new UpdateListingRequest("T", "D", BigDecimal.ONE, "S", "B", ListingCondition.FAIR, null, ListingCategory.CLOTHING),
                 1L))
                 .isInstanceOf(ApiException.class)
                 .hasMessageContaining("sold");

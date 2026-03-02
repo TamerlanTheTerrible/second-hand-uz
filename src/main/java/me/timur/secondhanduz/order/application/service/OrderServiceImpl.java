@@ -10,6 +10,7 @@ import me.timur.secondhanduz.order.domain.Order;
 import me.timur.secondhanduz.order.web.dto.CreateOrderRequest;
 import me.timur.secondhanduz.order.web.dto.OrderResponse;
 import me.timur.secondhanduz.order.web.dto.UpdateOrderStatusRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -47,16 +48,23 @@ public class OrderServiceImpl implements OrderService {
             throw new ApiException(HttpStatus.CONFLICT, ErrorCode.LISTING_NOT_AVAILABLE,
                     "Listing is not available for purchase");
         }
-        if (orderRepository.existsByListingId(request.listingId())) {
+        // Only count non-canceled orders — canceled orders free the listing for re-ordering
+        if (orderRepository.existsByListingIdAndStatusNot(request.listingId(), me.timur.secondhanduz.order.domain.OrderStatus.CANCELED)) {
             throw new ApiException(HttpStatus.CONFLICT, ErrorCode.LISTING_ALREADY_ORDERED,
                     "This listing has already been ordered");
         }
 
-        var order = new Order(buyerId, request.listingId(), listing.getPrice());
-        var saved = orderRepository.save(order);
-        auditLogService.log("ORDER_CREATED", buyerId, saved.getId(),
-                "listingId=" + request.listingId());
-        return toResponse(saved);
+        try {
+            var order = new Order(buyerId, request.listingId(), listing.getPrice());
+            var saved = orderRepository.save(order);
+            auditLogService.log("ORDER_CREATED", buyerId, saved.getId(),
+                    "listingId=" + request.listingId());
+            return toResponse(saved);
+        } catch (DataIntegrityViolationException ex) {
+            // Concurrent request raced past the soft check — partial unique index caught it
+            throw new ApiException(HttpStatus.CONFLICT, ErrorCode.LISTING_ALREADY_ORDERED,
+                    "This listing has already been ordered");
+        }
     }
 
     @Override

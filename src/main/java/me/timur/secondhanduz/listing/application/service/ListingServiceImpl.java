@@ -57,7 +57,9 @@ public class ListingServiceImpl implements ListingService {
                 request.price(),
                 request.size(),
                 contentSanitizer.sanitize(request.brand()),
-                request.condition()
+                request.condition(),
+                request.gender(),
+                request.category()
         );
         var saved = listingRepository.save(listing);
         auditLogService.log("LISTING_CREATED", sellerId, saved.getId(),
@@ -76,7 +78,9 @@ public class ListingServiceImpl implements ListingService {
                 request.price(),
                 request.size(),
                 contentSanitizer.sanitize(request.brand()),
-                request.condition()
+                request.condition(),
+                request.gender(),
+                request.category()
         );
         var saved = listingRepository.save(listing);
         auditLogService.log("LISTING_UPDATED", userId, listingId, "title=" + saved.getTitle());
@@ -102,9 +106,11 @@ public class ListingServiceImpl implements ListingService {
     @Override
     @Transactional(readOnly = true)
     public Page<ListingResponse> getListings(ListingSearchParams params, Pageable pageable) {
+        String queryPattern = params.query() != null ? "%" + params.query().toLowerCase() + "%" : null;
+        String brandPattern = params.brand() != null ? "%" + params.brand().toLowerCase() + "%" : null;
         return listingRepository.searchListings(
-                params.query(), params.brand(), params.minPrice(),
-                params.maxPrice(), params.size(), ListingStatus.ACTIVE, pageable
+                queryPattern, brandPattern, params.minPrice(),
+                params.maxPrice(), params.size(), params.category(), ListingStatus.ACTIVE, pageable
         ).map(this::toResponse);
     }
 
@@ -168,7 +174,7 @@ public class ListingServiceImpl implements ListingService {
                 listing.getId(), listing.getSellerId(), listing.getTitle(),
                 listing.getDescription(), listing.getPrice(), listing.getSize(),
                 listing.getBrand(), listing.getCondition(), listing.getStatus(),
-                listing.getImageUrls(), listing.getCreatedAt()
+                listing.getGender(), listing.getCategory(), listing.getImageUrls(), listing.getCreatedAt()
         );
     }
 }

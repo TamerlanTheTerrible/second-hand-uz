@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { listingsApi } from '../api/listings'
+import { useLocale } from '../context/LocaleContext'
 import ListingCard from '../components/ListingCard'
 import SearchBar from '../components/SearchBar'
 
 export default function HomePage() {
+  const { t } = useLocale()
   const [params, setParams] = useState({ status: 'ACTIVE' })
 
   const { data: listings, isLoading, isError } = useQuery({
@@ -19,15 +21,15 @@ export default function HomePage() {
   return (
     <div className="page">
       <div className="container">
-        <h1 style={styles.heading}>Browse Listings</h1>
+        <h1 style={styles.heading}>{t.home.title}</h1>
         <SearchBar onSearch={handleSearch} />
 
         {isLoading && <div className="spinner">Loading...</div>}
-        {isError   && <p style={styles.err}>Failed to load listings.</p>}
+        {isError   && <p style={styles.err}>{t.home.loadError}</p>}
 
         {listings && (
           listings.length === 0
-            ? <p style={styles.empty}>No listings found.</p>
+            ? <p style={styles.empty}>{t.home.noListings}</p>
             : <div className="grid">
                 {listings.map(l => <ListingCard key={l.id} listing={l} />)}
               </div>

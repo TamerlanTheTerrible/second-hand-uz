@@ -3,16 +3,10 @@ import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ordersApi } from '../api/orders'
 import { reviewsApi } from '../api/reviews'
-
-const STATUS_LABELS = {
-  CREATED:   { label: 'Created',   color: '#1976d2' },
-  PAID:      { label: 'Paid',      color: '#388e3c' },
-  SHIPPED:   { label: 'Shipped',   color: '#f57c00' },
-  COMPLETED: { label: 'Completed', color: '#7b1fa2' },
-  CANCELED:  { label: 'Canceled',  color: '#9e9e9e' },
-}
+import { useLocale } from '../context/LocaleContext'
 
 export default function OrdersPage() {
+  const { t } = useLocale()
   const queryClient = useQueryClient()
   const [reviewForm, setReviewForm] = useState({ orderId: null, rating: 5, comment: '' })
 
@@ -39,14 +33,18 @@ export default function OrdersPage() {
   return (
     <div className="page">
       <div className="container" style={{ maxWidth: '760px' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem' }}>My Orders</h1>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem' }}>{t.orders.title}</h1>
 
         {!orders?.length && (
-          <p style={{ color: '#757575', textAlign: 'center', padding: '3rem' }}>No orders yet.</p>
+          <p style={{ color: '#757575', textAlign: 'center', padding: '3rem' }}>{t.orders.noOrders}</p>
         )}
 
         {orders?.map(order => {
-          const statusInfo = STATUS_LABELS[order.status] ?? { label: order.status, color: '#757575' }
+          const statusLabel = t.orders.statuses[order.status] ?? order.status
+          const statusColors = {
+            CREATED: '#1976d2', PAID: '#388e3c', SHIPPED: '#f57c00',
+            COMPLETED: '#7b1fa2', CANCELED: '#9e9e9e',
+          }
           return (
             <div key={order.id} className="card" style={styles.orderCard}>
               <div style={styles.orderHeader}>
@@ -58,12 +56,12 @@ export default function OrdersPage() {
                     {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <span style={{ ...styles.statusBadge, color: statusInfo.color }}>
-                  {statusInfo.label}
+                <span style={{ ...styles.statusBadge, color: statusColors[order.status] ?? '#757575' }}>
+                  {statusLabel}
                 </span>
               </div>
 
-              <p style={styles.price}>{Number(order.totalAmount).toLocaleString()} UZS</p>
+              <p style={styles.price}>{Number(order.totalPrice).toLocaleString()} UZS</p>
 
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
                 {order.status === 'CREATED' && (
@@ -71,17 +69,17 @@ export default function OrdersPage() {
                     <button
                       className="btn btn-primary"
                       onClick={() => ordersApi.createPaymentSession(order.id)
-                        .then(s => window.location.href = s.paymentUrl)
+                        .then(s => { window.location.href = s.paymentUrl })
                       }
                     >
-                      Pay Now
+                      {t.orders.payNow}
                     </button>
                     <button
                       className="btn btn-danger"
                       onClick={() => cancelMutation.mutate(order.id)}
                       disabled={cancelMutation.isPending}
                     >
-                      Cancel
+                      {t.orders.cancel}
                     </button>
                   </>
                 )}
@@ -90,7 +88,7 @@ export default function OrdersPage() {
                     className="btn btn-secondary"
                     onClick={() => setReviewForm(f => ({ ...f, orderId: order.id }))}
                   >
-                    Leave Review
+                    {t.orders.leaveReview}
                   </button>
                 )}
               </div>
@@ -98,7 +96,7 @@ export default function OrdersPage() {
               {reviewForm.orderId === order.id && (
                 <div style={styles.reviewForm}>
                   <div className="form-group">
-                    <label>Rating (1-5)</label>
+                    <label>{t.orders.rating}</label>
                     <input
                       type="number" min="1" max="5"
                       value={reviewForm.rating}
@@ -106,7 +104,7 @@ export default function OrdersPage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Comment</label>
+                    <label>{t.orders.comment}</label>
                     <textarea
                       rows={3}
                       value={reviewForm.comment}
@@ -119,13 +117,13 @@ export default function OrdersPage() {
                       onClick={() => reviewMutation.mutate(reviewForm)}
                       disabled={reviewMutation.isPending}
                     >
-                      Submit
+                      {t.orders.submit}
                     </button>
                     <button
                       className="btn btn-secondary"
                       onClick={() => setReviewForm({ orderId: null, rating: 5, comment: '' })}
                     >
-                      Cancel
+                      {t.orders.cancelReview}
                     </button>
                   </div>
                 </div>

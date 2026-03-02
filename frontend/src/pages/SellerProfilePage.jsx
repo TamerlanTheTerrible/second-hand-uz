@@ -3,9 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { authApi } from '../api/auth'
 import { listingsApi } from '../api/listings'
 import { reviewsApi } from '../api/reviews'
+import { useLocale } from '../context/LocaleContext'
 import ListingCard from '../components/ListingCard'
 
 export default function SellerProfilePage() {
+  const { t } = useLocale()
   const { id } = useParams()
 
   const { data: seller,   isLoading: sellerLoading }   = useQuery({
@@ -33,14 +35,14 @@ export default function SellerProfilePage() {
             <h1 style={styles.email}>{seller?.email}</h1>
             <p style={styles.role}>{seller?.role}</p>
             <p style={styles.rating}>
-              Rating: <strong>{seller?.averageRating?.toFixed(1) ?? 'N/A'}</strong>
-              {seller?.totalReviews != null && ` (${seller.totalReviews} reviews)`}
+              {t.sellerProfile.rating}: <strong>{seller?.averageRating?.toFixed(1) ?? 'N/A'}</strong>
+              {seller?.totalReviews != null && ` (${seller.totalReviews} ${t.sellerProfile.reviews})`}
             </p>
           </div>
         </div>
 
         {/* Listings */}
-        <h2 style={styles.sectionTitle}>Listings</h2>
+        <h2 style={styles.sectionTitle}>{t.sellerProfile.listings}</h2>
         {listingsLoading ? (
           <div className="spinner">Loading...</div>
         ) : listings?.length ? (
@@ -50,11 +52,11 @@ export default function SellerProfilePage() {
             ))}
           </div>
         ) : (
-          <p style={styles.empty}>No active listings.</p>
+          <p style={styles.empty}>{t.sellerProfile.noListings}</p>
         )}
 
         {/* Reviews */}
-        <h2 style={styles.sectionTitle}>Reviews</h2>
+        <h2 style={styles.sectionTitle}>{t.sellerProfile.reviews}</h2>
         {reviewsLoading ? (
           <div className="spinner">Loading...</div>
         ) : reviews?.length ? (
@@ -70,7 +72,7 @@ export default function SellerProfilePage() {
             ))}
           </div>
         ) : (
-          <p style={styles.empty}>No reviews yet.</p>
+          <p style={styles.empty}>{t.sellerProfile.noReviews}</p>
         )}
       </div>
     </div>

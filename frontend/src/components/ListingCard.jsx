@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useLocale } from '../context/LocaleContext'
 
 export default function ListingCard({ listing }) {
-  const { id, title, price, condition, status, imageUrls } = listing
+  const { t } = useLocale()
+  const { id, title, price, condition, gender, category, status, imageUrls } = listing
   const thumbnail = imageUrls && imageUrls.length > 0 ? imageUrls[0] : null
 
   return (
@@ -10,7 +12,7 @@ export default function ListingCard({ listing }) {
         {thumbnail ? (
           <img src={thumbnail} alt={title} style={styles.image} />
         ) : (
-          <div style={styles.placeholder}>No image</div>
+          <div style={styles.placeholder}>{t.listing.noImage}</div>
         )}
         <span className={`badge badge-${status?.toLowerCase()}`} style={styles.badge}>
           {status}
@@ -19,7 +21,11 @@ export default function ListingCard({ listing }) {
       <div style={styles.body}>
         <p style={styles.title}>{title}</p>
         <p style={styles.price}>{Number(price).toLocaleString()} UZS</p>
-        <p style={styles.condition}>{condition?.replace('_', ' ')}</p>
+        <div style={styles.meta}>
+          {category  && <span style={styles.categoryTag}>{t.categoryLabels[category] ?? category.replace(/_/g, ' ')}</span>}
+          {condition && <span>{t.conditionLabels[condition] ?? condition.replace('_', ' ')}</span>}
+          {gender    && <span style={styles.genderTag}>{t.genderLabels[gender] ?? gender}</span>}
+        </div>
       </div>
     </Link>
   )
@@ -77,8 +83,23 @@ const styles = {
     fontSize: '1rem',
     marginBottom: '0.2rem',
   },
-  condition: {
+  meta: {
+    display: 'flex',
+    gap: '0.4rem',
+    flexWrap: 'wrap',
     color: '#757575',
     fontSize: '0.8rem',
+  },
+  categoryTag: {
+    background: '#f3e5f5',
+    color: '#6a1b9a',
+    borderRadius: '4px',
+    padding: '0 4px',
+  },
+  genderTag: {
+    background: '#e3f2fd',
+    color: '#1565c0',
+    borderRadius: '4px',
+    padding: '0 4px',
   },
 }

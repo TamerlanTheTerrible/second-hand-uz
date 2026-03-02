@@ -1,6 +1,7 @@
 package me.timur.secondhanduz.listing.application.port.out;
 
 import me.timur.secondhanduz.listing.domain.Listing;
+import me.timur.secondhanduz.listing.domain.ListingCategory;
 import me.timur.secondhanduz.listing.domain.ListingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +19,8 @@ public interface ListingRepository {
     Optional<Listing> findById(Long id);
 
     Page<Listing> searchListings(String query, String brand, BigDecimal minPrice,
-                                  BigDecimal maxPrice, String size, ListingStatus status,
-                                  Pageable pageable);
+                                  BigDecimal maxPrice, String size, ListingCategory category,
+                                  ListingStatus status, Pageable pageable);
 
     Page<Listing> findBySellerIdAndStatus(Long sellerId, ListingStatus status, Pageable pageable);
 }

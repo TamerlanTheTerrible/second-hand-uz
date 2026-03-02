@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -25,11 +25,11 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: dev
       DB_URL: jdbc:postgresql://postgres:5432/secondhanduz
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      JWT_SECRET: ${JWT_SECRET:change-me-in-production-must-be-at-least-32-chars}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-must-be-at-least-32-chars}
       ATMOS_BASE_URL: ${ATMOS_BASE_URL:-https://partner.atmos.uz}
       ATMOS_STORE_ID: ${ATMOS_STORE_ID:-}
       ATMOS_CONSUMER_KEY: ${ATMOS_CONSUMER_KEY:-}
@@ -37,10 +37,19 @@ services:
       ATMOS_WEBHOOK_SECRET: ${ATMOS_WEBHOOK_SECRET:-change-me}
       UPLOAD_PATH: /app/uploads
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      APP_FRONTEND_URL: ${APP_FRONTEND_URL:-http://localhost:5173}
     ports:
       - "8080:8080"
     volumes:
       - uploads:/app/uploads
+
+  frontend:
+    build: ./frontend
+    container_name: secondhanduz-frontend
+    depends_on:
+      - app
+    ports:
+      - "5173:5173"
 
 volumes:
   postgres_data:

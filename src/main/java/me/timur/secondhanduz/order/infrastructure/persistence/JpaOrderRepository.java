@@ -2,6 +2,7 @@ package me.timur.secondhanduz.order.infrastructure.persistence;
 
 import me.timur.secondhanduz.order.application.port.out.OrderRepository;
 import me.timur.secondhanduz.order.domain.Order;
+import me.timur.secondhanduz.order.domain.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,5 @@ public interface JpaOrderRepository extends JpaRepository<Order, Long>, OrderRep
     Page<Order> findByBuyerId(Long buyerId, Pageable pageable);
 
     @Override
-    boolean existsByListingId(Long listingId);
+    boolean existsByListingIdAndStatusNot(Long listingId, OrderStatus status);
 }

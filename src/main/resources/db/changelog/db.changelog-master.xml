@@ -9,5 +9,8 @@
     <include file="db/changelog/002-create-listings.sql" relativeToChangelogFile="false"/>
     <include file="db/changelog/003-create-orders.sql" relativeToChangelogFile="false"/>
     <include file="db/changelog/004-create-reviews.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/005-add-gender-to-listings.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/006-add-category-to-listings.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/007-fix-order-unique-constraint.sql" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>

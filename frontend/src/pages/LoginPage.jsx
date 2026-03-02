@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useLocale } from '../context/LocaleContext'
 import { authApi } from '../api/auth'
+import { getErrorMessage } from '../utils/errorMessage'
 
 export default function LoginPage() {
+  const { t } = useLocale()
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
   const [error,    setError]    = useState('')
@@ -23,7 +26,7 @@ export default function LoginPage() {
       login(data)
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err.response?.data?.message ?? 'Login failed')
+      setError(getErrorMessage(err, t.errors))
     } finally {
       setLoading(false)
     }
@@ -32,13 +35,13 @@ export default function LoginPage() {
   return (
     <div className="page" style={styles.wrapper}>
       <div className="card" style={styles.card}>
-        <h1 style={styles.title}>Log In</h1>
+        <h1 style={styles.title}>{t.login.title}</h1>
 
         {error && <p className="error-message" style={{ marginBottom: '1rem' }}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t.login.email}</label>
             <input
               id="email"
               type="email"
@@ -49,7 +52,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t.login.password}</label>
             <input
               id="password"
               type="password"
@@ -60,12 +63,13 @@ export default function LoginPage() {
             />
           </div>
           <button type="submit" className="btn btn-primary" style={styles.submitBtn} disabled={loading}>
-            {loading ? 'Logging in...' : 'Log In'}
+            {loading ? t.login.submitting : t.login.submit}
           </button>
         </form>
 
         <p style={styles.footer}>
-          Don't have an account? <Link to="/register" style={{ color: '#1976d2' }}>Register</Link>
+          {t.login.noAccount}{' '}
+          <Link to="/register" style={{ color: '#1976d2' }}>{t.login.registerLink}</Link>
         </p>
       </div>
     </div>
